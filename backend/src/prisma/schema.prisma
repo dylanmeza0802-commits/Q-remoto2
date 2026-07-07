@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  role      Role     @default(STUDENT)
+  turns     Turn[]
+  createdAt DateTime @default(now())
+}
+
+model Queue {
+  id          String   @id @default(uuid())
+  name        String
+  laneNumber  Int      @unique  // 1-4
+  floor       Int      @default(1) // 1 o 2
+  isActive    Boolean  @default(true)
+  isDelayed   Boolean  @default(false)
+  delayReason String?
+  turns       Turn[]
+  eventType   EventType @default(COMEDOR)
+  createdAt   DateTime @default(now())
+}
+
+model Turn {
+  id           String     @id @default(uuid())
+  ticketNumber Int
+  userId       String?
+  user         User?      @relation(fields: [userId], references: [id])
+  queueId      String
+  queue        Queue      @relation(fields: [queueId], references: [id])
+  status       TurnStatus @default(WAITING)
+  waitMinutes  Int        @default(0)
+  calledAt     DateTime?
+  cancelledAt  DateTime?
+  createdAt    DateTime   @default(now())
+}
+
+enum Role {
+  STUDENT
+  CASHIER
+  ADMIN
+}
+
+enum TurnStatus {
+  WAITING
+  CALLED
+  SERVED
+  CANCELLED
+}
+
+enum EventType {
+  COMEDOR
+  CANASTA_NAVIDENA
+}
