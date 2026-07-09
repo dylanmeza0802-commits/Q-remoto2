@@ -17,16 +17,17 @@ model User {
 }
 
 model Queue {
-  id          String    @id @default(uuid())
-  name        String
-  laneNumber  Int       @unique
-  floor       Int       @default(1)
-  isActive    Boolean   @default(true)
-  isDelayed   Boolean   @default(false)
-  delayReason String?
-  turns       Turn[]
-  eventType   EventType @default(COMEDOR)
-  createdAt   DateTime  @default(now())
+  id            String    @id @default(uuid())
+  name          String
+  laneNumber    Int       @unique
+  floor         Int       @default(1)
+  isActive      Boolean   @default(true)
+  isDelayed     Boolean   @default(false)
+  delayReason   String?
+  minsPerPerson Int       @default(3)
+  turns         Turn[]
+  eventType     EventType @default(COMEDOR)
+  createdAt     DateTime  @default(now())
 }
 
 model Turn {
@@ -38,6 +39,7 @@ model Turn {
   queue        Queue      @relation(fields: [queueId], references: [id])
   status       TurnStatus @default(WAITING)
   waitMinutes  Int        @default(0)
+  cedido       Boolean    @default(false)
   calledAt     DateTime?
   cancelledAt  DateTime?
   createdAt    DateTime   @default(now())
